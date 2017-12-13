@@ -1,9 +1,11 @@
 package de.lordstave.mongostats;
 
+import java.text.DecimalFormat;
+
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Kleiner Test :)");
+        double kdr_unmodified = 239213.234334;
         test();
     }
 
