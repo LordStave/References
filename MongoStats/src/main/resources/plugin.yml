@@ -1,0 +1,10 @@
+name: MongoStats
+author: LordStave
+version: 1.0
+website: https://github.com/LordStave
+main: de.lordstave.mongostats.Main
+
+commands:
+  stats:
+    description: Stats Command
+    aliases: [statistics]
