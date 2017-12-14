@@ -1,0 +1,13 @@
+name: SQLBanSystem
+author: LordStave
+version: 1.0
+website: https://github.com/LordStave
+main: de.lordstave.sqlbansystem.Main
+
+commands:
+  ban:
+    description: Ban Command
+  tempban:
+    description: Tempban Command
+  unban:
+    description: Unban Command
