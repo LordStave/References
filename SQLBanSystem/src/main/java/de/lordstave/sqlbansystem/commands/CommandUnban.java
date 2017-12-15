@@ -12,7 +12,7 @@ public class CommandUnban implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("system.tempban")) {
+        if(!sender.hasPermission("system.tempban")) {
             sender.sendMessage("§cYou have not enough permissions.");
             return true;
         }
@@ -21,8 +21,9 @@ public class CommandUnban implements CommandExecutor {
             return true;
         }
         String target = args[0];
+
         UUIDFetcher.getUUID(target, (UUID uuid) -> {
-            if (uuid == null) {
+            if(uuid == null) {
                 sender.sendMessage("§cThis player doesn't exists.");
                 return;
             }

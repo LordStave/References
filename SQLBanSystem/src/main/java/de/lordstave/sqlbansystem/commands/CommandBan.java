@@ -28,39 +28,31 @@ public class CommandBan implements CommandExecutor {
             builder.append(args[i]).append(" ");
         }
         String reason = builder.substring(0, builder.length() - 1);
+
         Player target = Bukkit.getPlayer(args[0]);
-        if(target != null) {
-            Main.getInstance().getBanManager().ban(target.getUniqueId(), new BanManager.BanInformation(target.getUniqueId(), sender.getName(), reason, System.currentTimeMillis(), -1L), (Boolean success) -> {
-                if(!success) {
-                    sender.sendMessage("§cThe player couldn't be banned.");
-                    return;
-                }
-                sender.sendMessage("§cThe player was banned successfully.");
-                Bukkit.getScheduler().runTask(Main.getInstance(), () -> target.kickPlayer("§4You are banned!"));
-            });
-        } else {
-            UUIDFetcher.getUUID(args[0], (UUID uuid) -> {
-                if(uuid == null) {
-                    sender.sendMessage("§cThis player doesn't exists.");
-                    return;
-                }
-                boolean banned = Main.getInstance().getBanManager().isBanned(uuid);
-                if(banned) {
-                    sender.sendMessage("§cThis player is already banned.");
-                    return;
-                }
-                boolean success = Main.getInstance().getBanManager().ban(uuid, new BanManager.BanInformation(uuid, sender.getName(), reason, System.currentTimeMillis(), -1L));
-                if(!success) {
-                    sender.sendMessage("§cThe player couldn't be banned.");
-                    return;
-                }
-                sender.sendMessage("§cThe player was banned successfully.");
-            });
+        if(target == null) {
+            UUIDFetcher.getUUID(args[0], (UUID uuid) -> this.ban(sender, uuid, reason));
+            return true;
         }
+        Main.getInstance().getDatabaseHandler().executeAsync(() -> this.ban(sender, target.getUniqueId(), reason));
         return true;
     }
 
-    private void ban(CommandSender sender, BanManager.BanInformation information) {
-
+    private void ban(CommandSender sender, UUID target, String reason) {
+        if(target == null) {
+            sender.sendMessage("§cThis player doesn't exists.");
+            return;
+        }
+        boolean banned = Main.getInstance().getBanManager().isBanned(target);
+        if(banned) {
+            sender.sendMessage("§cThis player is already banned.");
+            return;
+        }
+        boolean success = Main.getInstance().getBanManager().ban(target, new BanManager.BanInformation(target, sender.getName(), reason, System.currentTimeMillis(), -1L));
+        if(!success) {
+            sender.sendMessage("§cThe player couldn't be banned.");
+            return;
+        }
+        sender.sendMessage("§cThe player was banned successfully.");
     }
 }

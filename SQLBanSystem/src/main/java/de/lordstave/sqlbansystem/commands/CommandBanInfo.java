@@ -34,12 +34,11 @@ public class CommandBanInfo implements CommandExecutor {
                     return;
                 }
                 this.sendBanLogs(sender, uuid);
-                return;
             });
             return true;
         }
         this.sendBanLogs(sender, target.getUniqueId());
-        return false;
+        return true;
     }
 
     private void sendBanLogs(CommandSender sender, UUID target) {
