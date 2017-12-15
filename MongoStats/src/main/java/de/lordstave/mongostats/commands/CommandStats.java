@@ -62,7 +62,7 @@ public class CommandStats implements CommandExecutor {
                 return true;
             }
             default: {
-                player.sendMessage("Syntax: /stats");
+                player.sendMessage("§cSyntax: /stats");
                 player.sendMessage("Sytax: /stats <player>");
                 return true;
             }

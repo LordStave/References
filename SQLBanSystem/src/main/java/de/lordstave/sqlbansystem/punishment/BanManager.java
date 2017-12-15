@@ -5,6 +5,8 @@ import de.lordstave.sqlbansystem.Main;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -12,7 +14,7 @@ public class BanManager {
 
     public BanManager() {
         Main.getInstance().getDatabaseHandler().executeUpdate("CREATE TABLE IF NOT EXISTS `Bans` (" +
-                " `UUID` VARCHAR(36) NOT NULL," +
+                " `UUID` CHAR(36) NOT NULL," +
                 " `BannedBy` VARCHAR(36) NOT NULL," +
                 " `Reason` TEXT," +
                 " `Timestamp` BIGINT NOT NULL," +
@@ -20,7 +22,7 @@ public class BanManager {
                 " PRIMARY KEY (`UUID`)" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
         Main.getInstance().getDatabaseHandler().executeUpdate("CREATE TABLE IF NOT EXISTS `BansArchive` (" +
-                " `UUID` VARCHAR(36) NOT NULL," +
+                " `UUID` CHAR(36) NOT NULL," +
                 " `BannedBy` VARCHAR(36) NOT NULL," +
                 " `Reason` TEXT NOT NULL," +
                 " `Timestamp` BIGINT NOT NULL," +
@@ -29,7 +31,7 @@ public class BanManager {
                 " KEY (`BannedBy`)" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
     }
-    
+
     public boolean ban(UUID uuid, BanInformation information) {
         try {
             if(!isBanned(uuid)) {
@@ -111,11 +113,42 @@ public class BanManager {
         Main.getInstance().getDatabaseHandler().executeAsync(() -> consumer.accept(getBanInformation(uuid)));
     }
 
+    public List<BanInformation> getArchiveInformations(UUID uuid) {
+        try {
+            List<BanInformation> banInformationList = new LinkedList<>();
+            BanInformation current = this.getBanInformation(uuid);
+            if(current != null) {
+                banInformationList.add(current);
+            }
+
+            PreparedStatement statement = Main.getInstance().getDatabaseHandler().getConnection().prepareStatement("SELECT `BannedBy`, `Reason`, `Timestamp`, `Duration` FROM `BansArchive` WHERE `UUID` = ?");
+            statement.setString(1, uuid.toString());
+
+            ResultSet resultSet = statement.executeQuery();
+            BanInformation information = null;
+            while(resultSet.next()) {
+                information = new BanInformation(uuid, resultSet.getString("BannedBy"), resultSet.getString("Reason"), resultSet.getLong("Timestamp"), resultSet.getLong("Duration"));
+                if(information != null) {
+                    banInformationList.add(information);
+                }
+            }
+            Main.getInstance().getDatabaseHandler().close(resultSet, statement);
+            return banInformationList;
+        } catch(SQLException exception) {
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
+    public void getArchiveInformations(UUID uuid, Consumer<List<BanInformation>> consumer) {
+        Main.getInstance().getDatabaseHandler().executeAsync(() -> consumer.accept(getArchiveInformations(uuid)));
+    }
+
     public boolean clearBanArchive(UUID uuid) {
         try {
             PreparedStatement statement = Main.getInstance().getDatabaseHandler().getConnection().prepareStatement("DELETE FROM `BansArchive` WHERE `UUID` = ?");
             statement.setString(1, uuid.toString());
-            
+
             Main.getInstance().getDatabaseHandler().executeUpdate(statement);
             return true;
         } catch(SQLException exception) {

@@ -1,6 +1,7 @@
 package de.lordstave.sqlbansystem;
 
 import de.lordstave.sqlbansystem.commands.CommandBan;
+import de.lordstave.sqlbansystem.commands.CommandBanInfo;
 import de.lordstave.sqlbansystem.commands.CommandTempban;
 import de.lordstave.sqlbansystem.commands.CommandUnban;
 import de.lordstave.sqlbansystem.database.DatabaseHandler;
@@ -51,6 +52,7 @@ public class Main extends JavaPlugin {
         this.getCommand("ban").setExecutor(new CommandBan());
         this.getCommand("tempban").setExecutor(new CommandTempban());
         this.getCommand("unban").setExecutor(new CommandUnban());
+        this.getCommand("baninfo").setExecutor(new CommandBanInfo());
     }
 
     private void writeDefaults() {

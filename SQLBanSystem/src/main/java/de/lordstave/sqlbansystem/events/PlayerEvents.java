@@ -17,7 +17,7 @@ public class PlayerEvents implements Listener {
         UUID uuid = event.getUniqueId();
         if(Main.getInstance().getBanManager().isBanned(uuid)) {
             BanManager.BanInformation information = Main.getInstance().getBanManager().getBanInformation(uuid);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
             if(information.isPermanently()) {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "§4You are permanently banned!\n§cBanned until: §4PERMANENTLY");
                 return;

@@ -15,11 +15,11 @@ import java.util.UUID;
 public class CommandTempban implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if (!sender.hasPermission("system.tempban")) {
-            sender.sendMessage("You have not enough permissions.");
+        if(!sender.hasPermission("system.tempban")) {
+            sender.sendMessage("§cYou have not enough permissions.");
             return true;
         }
-        if (args.length < 3) {
+        if(args.length < 3) {
             /**
              * Time format
              * 10s = 10 seconds
@@ -31,47 +31,47 @@ public class CommandTempban implements CommandExecutor {
              *
              * Example: /tempban Kevin 8d10m Test
              */
-            sender.sendMessage("Syntax: /tempban <player> <time> <reason>");
+            sender.sendMessage("§cSyntax: /tempban <player> <time> <reason>");
             return true;
         }
         StringBuilder builder = new StringBuilder();
-        for (int i = 2; i < args.length; i++) {
+        for(int i = 2; i < args.length; i++) {
             builder.append(args[i]).append(" ");
         }
         String reason = builder.substring(0, builder.length() - 1);
         long time = Util.parseDateDiff(args[1]);
         if(time == -1L) {
-            sender.sendMessage("Syntax: /tempban <player> <time> <reason>");
+            sender.sendMessage("§cSyntax: /tempban <player> <time> <reason>");
             return true;
         }
 
         Player target = Bukkit.getPlayer(args[0]);
-        if (target != null) {
+        if(target != null) {
             Main.getInstance().getBanManager().ban(target.getUniqueId(), new BanManager.BanInformation(target.getUniqueId(), sender.getName(), reason, System.currentTimeMillis(), time), (Boolean success) -> {
-                if (!success) {
-                    sender.sendMessage("The player couldn't be banned.");
+                if(!success) {
+                    sender.sendMessage("§cThe player couldn't be banned.");
                     return;
                 }
-                sender.sendMessage("The player was banned successfully.");
+                sender.sendMessage("§cThe player was banned successfully.");
                 Bukkit.getScheduler().runTask(Main.getInstance(), () -> target.kickPlayer("§4You are banned!"));
             });
         } else {
             UUIDFetcher.getUUID(args[0], (UUID uuid) -> {
-                if (uuid == null) {
-                    sender.sendMessage("This player doesn't exists.");
+                if(uuid == null) {
+                    sender.sendMessage("§cThis player doesn't exists.");
                     return;
                 }
                 boolean banned = Main.getInstance().getBanManager().isBanned(uuid);
-                if (banned) {
-                    sender.sendMessage("This player is already banned.");
+                if(banned) {
+                    sender.sendMessage("§cThis player is already banned.");
                     return;
                 }
                 boolean success = Main.getInstance().getBanManager().ban(uuid, new BanManager.BanInformation(uuid, sender.getName(), reason, System.currentTimeMillis(), time));
-                if (!success) {
-                    sender.sendMessage("The player couldn't be banned.");
+                if(!success) {
+                    sender.sendMessage("§cThe player couldn't be banned.");
                     return;
                 }
-                sender.sendMessage("The player was banned successfully.");
+                sender.sendMessage("§cThe player was banned successfully.");
             });
         }
         return true;
